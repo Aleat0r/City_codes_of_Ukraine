@@ -1,10 +1,5 @@
 package com.kovalenko.aleksandr.aleat0r.citycodesofukraine;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -13,16 +8,21 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 public class DBHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "ukrainian_cities.sqlite"; //Имя БД
     private static final int DB_VERSION = 1; //Версия БД
-    private static final String DB_TABLE = "city"; //Название таблицы в БД
     private static final String DB_PATH = "/data/data/com.kovalenko.aleksandr.aleat0r.citycodesofukraine/databases/"; //Путь к БД
-    public static final String COLUMN_ID = "_id";
-    public static final String COLUMN_R_NUMBER = "region_number";
-    public static final String COLUMN_R_NAME = "name";
-    public static final String COLUMN_CODE = "phone_code";
+
+    public static final String COLUMN_R_NAME = "name"; //Колонка названия города в БД
+    public static final String COLUMN_CODE = "phone_code"; //Колонка кода города в БД
+    public static final String COLUMN_REGION = "name_region"; //Колонка областей в БД
 
     public static final String LOG_TAG = "myLogs";
 
@@ -76,23 +76,21 @@ public class DBHelper extends SQLiteOpenHelper {
     private void copyDatabase() {
 
         Log.d(LOG_TAG, "Новая база данных копируется на устройство");
-        byte[] buffer = new byte[1024];
-        OutputStream myOutput = null;
-        int length;
-
-        // Открываем локальную БД как входящий поток
-        InputStream myInput = null;
         try {
-            myInput = myContext.getAssets().open(DB_NAME);
+            // Открываем локальную БД как входящий поток
+            InputStream myInput = myContext.getAssets().open(DB_NAME);
 
-            // Передаем данные из inputfile в outputfile
-            myOutput = new FileOutputStream(DB_PATH + DB_NAME);
+            // Открываем пустую базу данных как исходящий поток
+            OutputStream myOutput = new FileOutputStream(DB_PATH + DB_NAME);
+
+            // Перемещаем байты из входящего файла в исходящий
+            byte[] buffer = new byte[1024];
+            int length;
             while ((length = myInput.read(buffer)) > 0) {
                 myOutput.write(buffer, 0, length);
             }
 
             // закрываем потоки
-
             myOutput.flush();
             myOutput.close();
             myInput.close();
@@ -117,9 +115,11 @@ public class DBHelper extends SQLiteOpenHelper {
         super.close();
     }
 
+    String sqlQuery = "SELECT * FROM city AS CT, region AS RT where CT.region_number = RT._id;";
+
 //  Получить все данные из таблицы DB_TABLE
     public Cursor getAllData() {
-        return myDataBase.query(DB_TABLE, null, null, null, null, null, null);
+        return myDataBase.rawQuery(sqlQuery, new String[]{});
     }
 
 

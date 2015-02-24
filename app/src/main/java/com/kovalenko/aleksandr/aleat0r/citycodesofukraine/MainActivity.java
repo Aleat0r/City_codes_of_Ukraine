@@ -13,9 +13,6 @@ public class MainActivity extends ActionBarActivity {
     SimpleCursorAdapter scAdapter;
     Cursor cursor;
 
-    final String LOG_TAG = "myLogs";
-    final String LOG_TAG1 = "myLogs1";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,8 +27,8 @@ public class MainActivity extends ActionBarActivity {
         startManagingCursor(cursor);
 
         // Формируем столбцы сопоставления
-        String[] from = new String[] { DBHelper.COLUMN_R_NAME, DBHelper.COLUMN_CODE};
-        int[] to = new int[] { R.id.city_name, R.id.city_code };
+        String[] from = new String[] { DBHelper.COLUMN_R_NAME, DBHelper.COLUMN_REGION, DBHelper.COLUMN_CODE};
+        int[] to = new int[] { R.id.city_name, R.id.region_name, R.id.city_code };
 
         // создааем адаптер и настраиваем список
         scAdapter = new SimpleCursorAdapter(this, R.layout.item, cursor, from, to);
