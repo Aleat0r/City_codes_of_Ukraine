@@ -9,7 +9,7 @@
         android:id="@+id/listData"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:divider="#00BFFF"
+        android:divider="@color/dividerColor"
         android:dividerHeight="1dp" >
     </ListView>
 

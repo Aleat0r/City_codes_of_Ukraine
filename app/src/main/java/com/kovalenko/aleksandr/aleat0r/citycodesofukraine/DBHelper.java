@@ -18,8 +18,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "ukrainian_cities.sqlite"; //Имя БД
     private static final int DB_VERSION = 1; //Версия БД
-    private static final String DB_PATH = "/data/data/com.kovalenko.aleksandr.aleat0r.citycodesofukraine/databases/"; //Путь к БД
-
+    private static final String DB_PATH = "/data/data/com.kovalenko.aleksandr.aleat0r." +
+            "citycodesofukraine/databases/"; //Путь к БД
     public static final String COLUMN_R_NAME = "name"; //Колонка названия города в БД
     public static final String COLUMN_CODE = "phone_code"; //Колонка кода города в БД
     public static final String COLUMN_REGION = "name_region"; //Колонка областей в БД
@@ -115,13 +115,20 @@ public class DBHelper extends SQLiteOpenHelper {
         super.close();
     }
 
-    String sqlQuery = "SELECT * FROM city AS CT, region AS RT where CT.region_number = RT._id;";
+    String sqlQuery = "SELECT * FROM city AS CT, region AS RT WHERE CT.region_number = RT._id;";
 
 //  Получить все данные из таблицы DB_TABLE
     public Cursor getAllData() {
         return myDataBase.rawQuery(sqlQuery, new String[]{});
     }
 
+    String SearchResult = "SELECT * FROM city AS CT, region AS RT ON CT.region_number = RT._id " +
+            "WHERE CT.name LIKE '%' || ? || '%' OR CT.phone_code LIKE ? || '%' ;";
+
+//  Получить данные по поиску из таблицы DB_TABLE
+    public Cursor selectRecordsByQuery (String query){
+        return myDataBase.rawQuery(SearchResult, new String[]{query, query});
+    }
 
     @Override
     public void onCreate(SQLiteDatabase arg0) {

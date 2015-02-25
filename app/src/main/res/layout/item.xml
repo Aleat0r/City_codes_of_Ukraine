@@ -12,12 +12,13 @@
         android:text=""
         android:textColor="@android:color/black"
         android:textSize="18sp" />
+
     <TextView
         android:id="@+id/region_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text=""
-        android:textColor="#696969"
+        android:textColor="@color/textColor"
         android:layout_marginLeft="15dp"
         android:textSize="15sp" />
 
@@ -33,7 +34,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/before_number"
-            android:textColor="#696969"
+            android:textColor="@color/textColor"
             android:textSize="16sp" />
 
         <TextView
@@ -41,7 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=""
-            android:textColor="#696969"
+            android:textColor="@color/textColor"
             android:textSize="16sp" />
 
         <TextView
@@ -49,7 +50,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/after_number"
-            android:textColor="#696969"
+            android:textColor="@color/textColor"
             android:textSize="16sp" />
 
     </LinearLayout>
