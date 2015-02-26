@@ -4,14 +4,19 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
 public class MainActivity extends ActionBarActivity {
+
+    private static final int BEGINNING_OF_NUMBER = +380;
 
     ListView lvData;
     DBHelper db;
@@ -48,6 +53,22 @@ public class MainActivity extends ActionBarActivity {
         scAdapter = new SimpleCursorAdapter(this, R.layout.item, cursor, from, to);
         lvData = (ListView) findViewById(R.id.listData);
         lvData.setAdapter(scAdapter);
+
+        // создаём обработчик и присваиваем его списку
+        lvData.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                // получаем курсор и ставим его на позицию
+                cursor = ((SimpleCursorAdapter)lvData.getAdapter()).getCursor();
+                cursor.moveToPosition(position);
+                // извлекаем из курсора значение нажатого пункта списка и склеиваем его с началом номера(+380)
+                String itemValue = BEGINNING_OF_NUMBER + cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_CODE));
+                // вызываем экран для набора номера и передаем ему значение нажатого пункта списка
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse("tel:" + itemValue));
+                startActivity(intent);
+            }
+        });
     }
 
     public void doMySearch (String query) {
