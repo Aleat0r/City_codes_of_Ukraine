@@ -16,7 +16,7 @@ import android.widget.SimpleCursorAdapter;
 
 public class MainActivity extends ActionBarActivity {
 
-    private static final int BEGINNING_OF_NUMBER = +380;
+    private static final String BEGINNING_OF_NUMBER = "+380";
 
     ListView lvData;
     DBHelper db;
@@ -41,47 +41,50 @@ public class MainActivity extends ActionBarActivity {
             return;
         }
 
-        // получаем курсор
+        // получаем курсор со всеми данными из БД
         cursor = db.getAllData();
+        //создаём список
+        createList(cursor);
+    }
+
+    public void createList (Cursor cursor){
         startManagingCursor(cursor);
 
         // Формируем столбцы сопоставления
-        String[] from = new String[] { DBHelper.COLUMN_R_NAME, DBHelper.COLUMN_REGION, DBHelper.COLUMN_CODE};
-        int[] to = new int[] { R.id.city_name, R.id.region_name, R.id.city_code };
+        String[] from = new String[]{DBHelper.COLUMN_R_NAME, DBHelper.COLUMN_REGION, DBHelper.COLUMN_CODE};
+        int[] to = new int[]{R.id.city_name, R.id.region_name, R.id.city_code};
 
         // создааем адаптер и настраиваем список
         scAdapter = new SimpleCursorAdapter(this, R.layout.item, cursor, from, to);
         lvData = (ListView) findViewById(R.id.listData);
         lvData.setAdapter(scAdapter);
 
-        // создаём обработчик и присваиваем его списку
-        lvData.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                // получаем курсор и ставим его на позицию
-                cursor = ((SimpleCursorAdapter)lvData.getAdapter()).getCursor();
-                cursor.moveToPosition(position);
-                // извлекаем из курсора значение нажатого пункта списка и склеиваем его с началом номера(+380)
-                String itemValue = BEGINNING_OF_NUMBER + cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_CODE));
-                // вызываем экран для набора номера и передаем ему значение нажатого пункта списка
-                Intent intent = new Intent(Intent.ACTION_DIAL);
-                intent.setData(Uri.parse("tel:" + itemValue));
-                startActivity(intent);
-            }
-        });
+        // присваиваем обработчик нажатий списку
+        lvData.setOnItemClickListener(onItemClickListener);
     }
+
+
+    // создаём обработчик нажатия на пункт списка
+    AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+            // получаем курсор и ставим его на позицию
+            cursor = ((SimpleCursorAdapter)lvData.getAdapter()).getCursor();
+            cursor.moveToPosition(position);
+            // извлекаем из курсора значение нажатого пункта списка и склеиваем его с началом номера(+380)
+            String itemValue = BEGINNING_OF_NUMBER + cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_CODE));
+            // вызываем экран для набора номера и передаем ему значение нажатого пункта списка
+            Intent intent = new Intent(Intent.ACTION_DIAL);
+            intent.setData(Uri.parse("tel:" + itemValue));
+            startActivity(intent);
+        }
+    };
 
     public void doMySearch (String query) {
         //Ищем совпадения
         searchCursor = db.selectRecordsByQuery(query);
-        startManagingCursor(searchCursor);
-        //Обновляем адаптер
-        String[] from = new String[] { DBHelper.COLUMN_R_NAME, DBHelper.COLUMN_REGION, DBHelper.COLUMN_CODE};
-        int[] to = new int[] { R.id.city_name, R.id.region_name, R.id.city_code };
-        scAdapter = new SimpleCursorAdapter(this,
-                R.layout.item, searchCursor, from, to);
-        lvData = (ListView) findViewById(R.id.listData);
-        lvData.setAdapter(scAdapter);
+        //создаём список
+        createList(searchCursor);
     }
 
     @Override
